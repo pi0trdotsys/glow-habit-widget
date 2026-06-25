@@ -76,21 +76,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { title: "Loop — Habit Tracker" },
+      { name: "description", content: "Build healthy habits. Keep your streak alive." },
+      { name: "theme-color", content: "#0f0f12" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      { name: "apple-mobile-web-app-title", content: "Loop" },
+      { property: "og:title", content: "Loop — Habit Tracker" },
+      { property: "og:description", content: "Build healthy habits. Keep your streak alive." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "icon", type: "image/png", sizes: "192x192", href: "/icon-192.png" },
+      { rel: "apple-touch-icon", href: "/icon-192.png" },
     ],
   }),
   shellComponent: RootShell,
@@ -118,8 +122,35 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+      <PwaRegister />
       <Outlet />
     </QueryClientProvider>
   );
+}
+
+function PwaRegister() {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!("serviceWorker" in navigator)) return;
+    if (!import.meta.env.PROD) return;
+    if (window.self !== window.top) return;
+    const h = window.location.hostname;
+    const blocked =
+      h.startsWith("id-preview--") ||
+      h.startsWith("preview--") ||
+      h === "lovableproject.com" || h.endsWith(".lovableproject.com") ||
+      h === "lovableproject-dev.com" || h.endsWith(".lovableproject-dev.com") ||
+      h === "beta.lovable.dev" || h.endsWith(".beta.lovable.dev");
+    const killed = new URLSearchParams(window.location.search).get("sw") === "off";
+    if (blocked || killed) {
+      navigator.serviceWorker.getRegistrations().then((regs) => {
+        regs.forEach((r) => {
+          if (r.active?.scriptURL.endsWith("/sw.js")) r.unregister();
+        });
+      });
+      return;
+    }
+    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  }, []);
+  return null;
 }
