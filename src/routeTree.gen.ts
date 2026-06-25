@@ -9,38 +9,130 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WidgetRouteImport } from './routes/widget'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as HabitsRouteImport } from './routes/habits'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as HabitsIndexRouteImport } from './routes/habits.index'
+import { Route as HabitsNewRouteImport } from './routes/habits.new'
+import { Route as HabitsIdRouteImport } from './routes/habits.$id'
 
+const WidgetRoute = WidgetRouteImport.update({
+  id: '/widget',
+  path: '/widget',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HabitsRoute = HabitsRouteImport.update({
+  id: '/habits',
+  path: '/habits',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HabitsIndexRoute = HabitsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => HabitsRoute,
+} as any)
+const HabitsNewRoute = HabitsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => HabitsRoute,
+} as any)
+const HabitsIdRoute = HabitsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => HabitsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/habits': typeof HabitsRouteWithChildren
+  '/settings': typeof SettingsRoute
+  '/widget': typeof WidgetRoute
+  '/habits/$id': typeof HabitsIdRoute
+  '/habits/new': typeof HabitsNewRoute
+  '/habits/': typeof HabitsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/settings': typeof SettingsRoute
+  '/widget': typeof WidgetRoute
+  '/habits/$id': typeof HabitsIdRoute
+  '/habits/new': typeof HabitsNewRoute
+  '/habits': typeof HabitsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/habits': typeof HabitsRouteWithChildren
+  '/settings': typeof SettingsRoute
+  '/widget': typeof WidgetRoute
+  '/habits/$id': typeof HabitsIdRoute
+  '/habits/new': typeof HabitsNewRoute
+  '/habits/': typeof HabitsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/habits'
+    | '/settings'
+    | '/widget'
+    | '/habits/$id'
+    | '/habits/new'
+    | '/habits/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/settings' | '/widget' | '/habits/$id' | '/habits/new' | '/habits'
+  id:
+    | '__root__'
+    | '/'
+    | '/habits'
+    | '/settings'
+    | '/widget'
+    | '/habits/$id'
+    | '/habits/new'
+    | '/habits/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  HabitsRoute: typeof HabitsRouteWithChildren
+  SettingsRoute: typeof SettingsRoute
+  WidgetRoute: typeof WidgetRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/widget': {
+      id: '/widget'
+      path: '/widget'
+      fullPath: '/widget'
+      preLoaderRoute: typeof WidgetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/habits': {
+      id: '/habits'
+      path: '/habits'
+      fullPath: '/habits'
+      preLoaderRoute: typeof HabitsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +140,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/habits/': {
+      id: '/habits/'
+      path: '/'
+      fullPath: '/habits/'
+      preLoaderRoute: typeof HabitsIndexRouteImport
+      parentRoute: typeof HabitsRoute
+    }
+    '/habits/new': {
+      id: '/habits/new'
+      path: '/new'
+      fullPath: '/habits/new'
+      preLoaderRoute: typeof HabitsNewRouteImport
+      parentRoute: typeof HabitsRoute
+    }
+    '/habits/$id': {
+      id: '/habits/$id'
+      path: '/$id'
+      fullPath: '/habits/$id'
+      preLoaderRoute: typeof HabitsIdRouteImport
+      parentRoute: typeof HabitsRoute
+    }
   }
 }
 
+interface HabitsRouteChildren {
+  HabitsIdRoute: typeof HabitsIdRoute
+  HabitsNewRoute: typeof HabitsNewRoute
+  HabitsIndexRoute: typeof HabitsIndexRoute
+}
+
+const HabitsRouteChildren: HabitsRouteChildren = {
+  HabitsIdRoute: HabitsIdRoute,
+  HabitsNewRoute: HabitsNewRoute,
+  HabitsIndexRoute: HabitsIndexRoute,
+}
+
+const HabitsRouteWithChildren =
+  HabitsRoute._addFileChildren(HabitsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  HabitsRoute: HabitsRouteWithChildren,
+  SettingsRoute: SettingsRoute,
+  WidgetRoute: WidgetRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
