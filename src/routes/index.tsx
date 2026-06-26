@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { format } from "date-fns";
-import { Plus } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { HabitTile } from "@/components/HabitTile";
 import { useHabits } from "@/lib/habits/store";
-import { isDueOn, currentStreak } from "@/lib/habits/utils";
+import { isDueOn, currentStreak, weeklyReport, greetingFor } from "@/lib/habits/utils";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -19,6 +19,7 @@ export const Route = createFileRoute("/")({
 function TodayPage() {
   const habits = useHabits((s) => s.habits);
   const completions = useHabits((s) => s.completions);
+  const userName = useHabits((s) => s.userName);
   const today = new Date();
   const due = habits.filter((h) => isDueOn(h, today));
   const doneCount = due.filter((h) =>
@@ -29,6 +30,8 @@ function TodayPage() {
     (acc, h) => Math.max(acc, currentStreak(h, completions)),
     0,
   );
+  const report = weeklyReport(habits, completions);
+  const greeting = greetingFor(today);
 
   return (
     <AppShell>
@@ -36,7 +39,9 @@ function TodayPage() {
         <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
           {format(today, "EEEE, MMM d")}
         </p>
-        <h1 className="mt-2 font-display text-4xl font-bold tracking-tight">Today</h1>
+        <h1 className="mt-2 font-display text-4xl font-bold tracking-tight">
+          {greeting}{userName ? `, ${userName}` : ""}
+        </h1>
         <div className="mt-4 flex items-center gap-3 text-sm text-muted-foreground">
           <span className="rounded-full bg-card px-3 py-1">
             {doneCount}/{due.length} done
@@ -46,6 +51,21 @@ function TodayPage() {
           )}
         </div>
       </header>
+
+      {habits.length > 0 && (
+        <Link
+          to="/report"
+          className="mx-5 mb-6 flex items-center justify-between rounded-2xl bg-card p-4"
+        >
+          <div>
+            <div className="text-xs uppercase tracking-wider text-muted-foreground">
+              This week
+            </div>
+            <div className="mt-1 text-2xl font-bold">{report.thisWeek.rate}%</div>
+          </div>
+          <DeltaBadge delta={report.delta} />
+        </Link>
+      )}
 
       {due.length === 0 ? (
         <EmptyState />
@@ -70,6 +90,18 @@ function TodayPage() {
         <Plus size={26} strokeWidth={2.4} />
       </Link>
     </AppShell>
+  );
+}
+
+function DeltaBadge({ delta }: { delta: number }) {
+  const Icon = delta > 0 ? TrendingUp : delta < 0 ? TrendingDown : Minus;
+  const color = delta > 0 ? "var(--primary)" : delta < 0 ? "var(--destructive)" : "var(--muted-foreground)";
+  const label = delta === 0 ? "same as last week" : `${delta > 0 ? "+" : ""}${delta} pts vs last week`;
+  return (
+    <div className="flex items-center gap-2 rounded-full bg-background px-3 py-1.5 text-xs font-medium" style={{ color }}>
+      <Icon size={14} />
+      {label}
+    </div>
   );
 }
 
