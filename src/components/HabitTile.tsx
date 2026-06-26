@@ -29,8 +29,8 @@ export function HabitTile({ habit, compact = false }: Props) {
   });
 
   // Ring math
-  const size = compact ? 88 : 116;
-  const stroke = compact ? 6 : 8;
+  const size = compact ? 68 : 116;
+  const stroke = compact ? 5 : 8;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const ringProgress = done ? 1 : progress;
@@ -91,7 +91,7 @@ export function HabitTile({ habit, compact = false }: Props) {
         >
           <HabitIcon
             name={habit.icon}
-            size={compact ? 26 : 34}
+            size={compact ? 22 : 34}
             strokeWidth={1.8}
             className="text-foreground"
           />
