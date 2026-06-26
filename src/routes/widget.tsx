@@ -38,38 +38,36 @@ function WidgetPage() {
     >
       <div className="mx-auto max-w-md p-5">
         <div className="rounded-[28px] border border-border bg-card/80 p-5 shadow-2xl backdrop-blur-xl">
-          <div className="mb-4 flex items-end justify-between">
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                {format(today, "EEE, MMM d")}
-              </p>
-              <h1 className="mt-1 text-xl font-bold tracking-tight">
-                Loop · {doneCount}/{due.length}
-              </h1>
+          {due.length > 0 && (
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+                  Today's Progress
+                </span>
+                <span className="text-[10px] font-bold text-primary">
+                  {Math.round(progressPercent)}%
+                </span>
+              </div>
+              <div className="h-1 w-full bg-secondary rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
             </div>
-            <Link
-              to="/"
-              className="rounded-full bg-secondary px-3 py-1 text-[11px] font-medium text-secondary-foreground"
-            >
-              Open app
-            </Link>
-          </div>
+          )}
 
           {due.length === 0 ? (
             <p className="py-8 text-center text-sm text-muted-foreground">
               No habits scheduled.
             </p>
           ) : (
-            <div className="grid grid-cols-4 gap-y-5 gap-x-1">
+            <div className="grid grid-cols-4 gap-y-6 gap-x-2 justify-items-center">
               {due.map((h) => (
                 <HabitTile key={h.id} habit={h} compact />
               ))}
             </div>
           )}
-
-          <p className="mt-4 text-center text-[11px] text-muted-foreground">
-            Press & hold a habit to complete it
-          </p>
         </div>
       </div>
     </div>
