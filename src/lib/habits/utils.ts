@@ -119,3 +119,74 @@ export function completionRate(
   }
   return due === 0 ? 0 : Math.round((done / due) * 100);
 }
+
+function countInRange(
+  habit: Habit,
+  completions: Completion[],
+  start: Date,
+  end: Date,
+): { due: number; done: number } {
+  const set = new Set(
+    completions.filter((c) => c.habitId === habit.id).map((c) => c.date),
+  );
+  let due = 0;
+  let done = 0;
+  let cursor = start;
+  while (cursor <= end) {
+    if (isDueOn(habit, cursor)) {
+      due += 1;
+      if (set.has(todayKey(cursor))) done += 1;
+    }
+    cursor = addDays(cursor, 1);
+  }
+  return { due, done };
+}
+
+export interface WeeklyReport {
+  thisWeek: { due: number; done: number; rate: number };
+  lastWeek: { due: number; done: number; rate: number };
+  delta: number; // percentage points difference
+  perHabit: {
+    habit: Habit;
+    this: number;
+    last: number;
+    dueThis: number;
+  }[];
+}
+
+export function weeklyReport(
+  habits: Habit[],
+  completions: Completion[],
+): WeeklyReport {
+  const startThis = startOfWeek(new Date(), { weekStartsOn: 1 });
+  const endThis = new Date();
+  const startLast = addDays(startThis, -7);
+  const endLast = addDays(startThis, -1);
+
+  let dueT = 0, doneT = 0, dueL = 0, doneL = 0;
+  const perHabit: WeeklyReport["perHabit"] = [];
+  for (const h of habits) {
+    const t = countInRange(h, completions, startThis, endThis);
+    const l = countInRange(h, completions, startLast, endLast);
+    dueT += t.due; doneT += t.done;
+    dueL += l.due; doneL += l.done;
+    perHabit.push({ habit: h, this: t.done, last: l.done, dueThis: t.due });
+  }
+  const rateT = dueT === 0 ? 0 : Math.round((doneT / dueT) * 100);
+  const rateL = dueL === 0 ? 0 : Math.round((doneL / dueL) * 100);
+  return {
+    thisWeek: { due: dueT, done: doneT, rate: rateT },
+    lastWeek: { due: dueL, done: doneL, rate: rateL },
+    delta: rateT - rateL,
+    perHabit,
+  };
+}
+
+export function greetingFor(date: Date = new Date()): string {
+  const h = date.getHours();
+  if (h < 5) return "Still up";
+  if (h < 12) return "Good morning";
+  if (h < 18) return "Good afternoon";
+  if (h < 22) return "Good evening";
+  return "Good night";
+}
