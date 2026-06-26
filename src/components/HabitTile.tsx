@@ -91,7 +91,7 @@ export function HabitTile({ habit, compact = false }: Props) {
         >
           <HabitIcon
             name={habit.icon}
-            size={compact ? 26 : 34}
+            size={compact ? 22 : 34}
             strokeWidth={1.8}
             className="text-foreground"
           />
