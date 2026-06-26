@@ -27,6 +27,7 @@ function WidgetPage() {
       (c) => c.habitId === h.id && c.date === format(today, "yyyy-MM-dd"),
     ),
   ).length;
+  const progressPercent = due.length > 0 ? (doneCount / due.length) * 100 : 0;
 
   return (
     <div
