@@ -7,10 +7,18 @@ interface HabitsState {
   habits: Habit[];
   completions: Completion[];
   seeded: boolean;
+  userName: string | null;
+  setUserName: (name: string) => void;
+  notifications: {
+    enabled: boolean;
+    time: string; // "HH:mm"
+  };
+  setNotifications: (n: { enabled: boolean; time: string }) => void;
   addHabit: (h: Omit<Habit, "id" | "createdAt">) => string;
   updateHabit: (id: string, patch: Partial<Omit<Habit, "id">>) => void;
   removeHabit: (id: string) => void;
   toggleCompletion: (habitId: string, date?: Date) => void;
+  setCompletion: (habitId: string, dateKey: string, done: boolean) => void;
   isCompleted: (habitId: string, date?: Date) => boolean;
   exportData: () => string;
   importData: (json: string) => void;
@@ -37,6 +45,10 @@ export const useHabits = create<HabitsState>()(
       habits: [],
       completions: [],
       seeded: false,
+      userName: null,
+      setUserName: (name) => set({ userName: name.trim() || null }),
+      notifications: { enabled: false, time: "20:00" },
+      setNotifications: (n) => set({ notifications: n }),
       addHabit: (h) => {
         const id = uid();
         const habit: Habit = { ...h, id, createdAt: new Date().toISOString() };
@@ -65,6 +77,20 @@ export const useHabits = create<HabitsState>()(
           }));
         } else {
           set((s) => ({ completions: [...s.completions, { habitId, date: key }] }));
+        }
+      },
+      setCompletion: (habitId, dateKey, done) => {
+        const exists = get().completions.some(
+          (c) => c.habitId === habitId && c.date === dateKey,
+        );
+        if (done && !exists) {
+          set((s) => ({ completions: [...s.completions, { habitId, date: dateKey }] }));
+        } else if (!done && exists) {
+          set((s) => ({
+            completions: s.completions.filter(
+              (c) => !(c.habitId === habitId && c.date === dateKey),
+            ),
+          }));
         }
       },
       isCompleted: (habitId, date = new Date()) => {
