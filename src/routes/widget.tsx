@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { HabitTile } from "@/components/HabitTile";
 import { useHabits } from "@/lib/habits/store";
