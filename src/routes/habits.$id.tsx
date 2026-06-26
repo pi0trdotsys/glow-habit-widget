@@ -10,6 +10,7 @@ import {
   heatmapData,
   longestStreak,
   thisWeekCount,
+  todayKey,
 } from "@/lib/habits/utils";
 
 export const Route = createFileRoute("/habits/$id")({
@@ -23,6 +24,7 @@ function HabitDetail() {
   const habit = useHabits((s) => s.habits.find((h) => h.id === id));
   const completions = useHabits((s) => s.completions);
   const removeHabit = useHabits((s) => s.removeHabit);
+  const setCompletion = useHabits((s) => s.setCompletion);
 
   if (!habit) {
     return (
@@ -38,6 +40,7 @@ function HabitDetail() {
   const longest = longestStreak(habit, completions);
   const week = thisWeekCount(habit, completions);
   const rate = completionRate(habit, completions, 30);
+  const todayK = todayKey();
 
   return (
     <AppShell>
@@ -92,25 +95,34 @@ function HabitDetail() {
 
       <section className="mt-8 px-5">
         <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-          Last 12 weeks
+          Last 12 weeks · tap to edit
         </h2>
         <div
           className="grid grid-flow-col gap-1 rounded-2xl bg-card p-3"
           style={{ gridTemplateRows: "repeat(7, 1fr)" }}
         >
           {heat.map((d) => (
-            <div
+            <button
               key={d.date}
-              className="aspect-square rounded-[4px]"
+              type="button"
+              onClick={() => setCompletion(habit.id, d.date, !d.done)}
+              disabled={d.date > todayK}
+              className="aspect-square rounded-[4px] transition-transform active:scale-90 disabled:opacity-30"
               style={{
                 backgroundColor: d.done
                   ? color
                   : "color-mix(in oklab, var(--foreground) 6%, transparent)",
+                outline: d.date === todayK ? `1.5px solid ${color}` : undefined,
+                outlineOffset: d.date === todayK ? "1px" : undefined,
               }}
               title={d.date}
+              aria-label={`${d.date} ${d.done ? "completed" : "not completed"}`}
             />
           ))}
         </div>
+        <p className="mt-2 text-[11px] text-muted-foreground">
+          Tap any day to mark it done or undo it.
+        </p>
       </section>
     </AppShell>
   );

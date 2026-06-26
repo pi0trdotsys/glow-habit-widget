@@ -1,8 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useRef, useState } from "react";
-import { Download, Upload, RotateCcw, Smartphone } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Download, Upload, RotateCcw, Smartphone, Bell, User } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useHabits } from "@/lib/habits/store";
+import {
+  cancelDailyReminder,
+  notificationsSupported,
+  requestNotificationPermission,
+  scheduleDailyReminder,
+} from "@/lib/notifications";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({ meta: [{ title: "Settings — Loop" }] }),
@@ -13,6 +19,28 @@ function SettingsPage() {
   const exportData = useHabits((s) => s.exportData);
   const importData = useHabits((s) => s.importData);
   const reset = useHabits((s) => s.reset);
+  const userName = useHabits((s) => s.userName);
+  const setUserName = useHabits((s) => s.setUserName);
+  const notif = useHabits((s) => s.notifications);
+  const setNotifications = useHabits((s) => s.setNotifications);
+  const [nameDraft, setNameDraft] = useState(userName ?? "");
+  useEffect(() => setNameDraft(userName ?? ""), [userName]);
+
+  const [permission, setPermission] = useState<NotificationPermission | "unsupported">(
+    typeof window !== "undefined" && notificationsSupported()
+      ? Notification.permission
+      : "unsupported",
+  );
+
+  useEffect(() => {
+    if (notif.enabled && permission === "granted") {
+      scheduleDailyReminder(notif.time, "Check in on your habits.");
+    } else {
+      cancelDailyReminder();
+    }
+    return () => cancelDailyReminder();
+  }, [notif.enabled, notif.time, permission]);
+
   const fileRef = useRef<HTMLInputElement>(null);
   const [msg, setMsg] = useState<string | null>(null);
 
@@ -43,6 +71,84 @@ function SettingsPage() {
       </header>
 
       <div className="space-y-3 px-5">
+        <div className="rounded-2xl bg-card p-4">
+          <div className="flex items-center gap-3">
+            <User size={18} className="text-primary" />
+            <span className="font-medium">Your name</span>
+          </div>
+          <div className="mt-3 flex gap-2">
+            <input
+              value={nameDraft}
+              onChange={(e) => setNameDraft(e.target.value)}
+              maxLength={24}
+              placeholder="Your name"
+              className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+            />
+            <button
+              onClick={() => {
+                setUserName(nameDraft);
+                setMsg("Saved.");
+              }}
+              className="rounded-xl px-4 text-sm font-medium"
+              style={{ backgroundColor: "var(--primary)", color: "var(--primary-foreground)" }}
+            >
+              Save
+            </button>
+          </div>
+        </div>
+
+        <div className="rounded-2xl bg-card p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Bell size={18} className="text-primary" />
+              <span className="font-medium">Daily reminder</span>
+            </div>
+            <label className="relative inline-flex h-6 w-11 cursor-pointer items-center">
+              <input
+                type="checkbox"
+                className="peer sr-only"
+                checked={notif.enabled}
+                disabled={permission === "unsupported"}
+                onChange={async (e) => {
+                  if (e.target.checked) {
+                    const p = await requestNotificationPermission();
+                    setPermission(p);
+                    setNotifications({ ...notif, enabled: p === "granted" });
+                    if (p !== "granted") setMsg("Notifications were not allowed.");
+                  } else {
+                    setNotifications({ ...notif, enabled: false });
+                  }
+                }}
+              />
+              <span className="absolute inset-0 rounded-full bg-muted peer-checked:bg-primary transition-colors" />
+              <span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-background transition-transform peer-checked:translate-x-5" />
+            </label>
+          </div>
+          <div className="mt-3 flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">Reminder time</span>
+            <input
+              type="time"
+              value={notif.time}
+              onChange={(e) => setNotifications({ ...notif, time: e.target.value })}
+              disabled={!notif.enabled}
+              className="rounded-xl border border-border bg-background px-3 py-1.5 text-sm outline-none disabled:opacity-50"
+            />
+          </div>
+          {permission === "denied" && (
+            <p className="mt-2 text-[11px] text-destructive">
+              Notifications are blocked. Enable them in your browser settings.
+            </p>
+          )}
+          {permission === "unsupported" && (
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              Your browser doesn't support notifications.
+            </p>
+          )}
+          <p className="mt-2 text-[11px] text-muted-foreground">
+            Reminders fire only while the app is open. Add Loop to your home screen for the best experience.
+          </p>
+        </div>
+
         <Row
           icon={<Smartphone size={18} />}
           title="Add to home screen"

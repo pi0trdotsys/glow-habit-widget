@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { HabitIcon } from "./HabitIcon";
 import { useHoldToComplete } from "@/hooks/useHoldToComplete";
 import { useHabits } from "@/lib/habits/store";
@@ -22,7 +23,17 @@ export function HabitTile({ habit, compact = false }: Props) {
 
   const { handlers, progress, isHolding } = useHoldToComplete({
     duration: 600,
-    onComplete: () => toggleCompletion(habit.id),
+    onComplete: () => {
+      const wasDone = done;
+      toggleCompletion(habit.id);
+      toast(wasDone ? `Undone: ${habit.name}` : `Done: ${habit.name}`, {
+        action: {
+          label: "Undo",
+          onClick: () => toggleCompletion(habit.id),
+        },
+        duration: 3000,
+      });
+    },
     onTap: () => {
       if (!compact) navigate({ to: "/habits/$id", params: { id: habit.id } });
     },

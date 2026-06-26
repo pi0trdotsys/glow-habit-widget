@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WidgetRouteImport } from './routes/widget'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as ReportRouteImport } from './routes/report'
 import { Route as HabitsRouteImport } from './routes/habits'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HabitsIndexRouteImport } from './routes/habits.index'
@@ -25,6 +26,11 @@ const WidgetRoute = WidgetRouteImport.update({
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportRoute = ReportRouteImport.update({
+  id: '/report',
+  path: '/report',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HabitsRoute = HabitsRouteImport.update({
@@ -56,6 +62,7 @@ const HabitsIdRoute = HabitsIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/habits': typeof HabitsRouteWithChildren
+  '/report': typeof ReportRoute
   '/settings': typeof SettingsRoute
   '/widget': typeof WidgetRoute
   '/habits/$id': typeof HabitsIdRoute
@@ -64,6 +71,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/report': typeof ReportRoute
   '/settings': typeof SettingsRoute
   '/widget': typeof WidgetRoute
   '/habits/$id': typeof HabitsIdRoute
@@ -74,6 +82,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/habits': typeof HabitsRouteWithChildren
+  '/report': typeof ReportRoute
   '/settings': typeof SettingsRoute
   '/widget': typeof WidgetRoute
   '/habits/$id': typeof HabitsIdRoute
@@ -85,17 +94,26 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/habits'
+    | '/report'
     | '/settings'
     | '/widget'
     | '/habits/$id'
     | '/habits/new'
     | '/habits/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/settings' | '/widget' | '/habits/$id' | '/habits/new' | '/habits'
+  to:
+    | '/'
+    | '/report'
+    | '/settings'
+    | '/widget'
+    | '/habits/$id'
+    | '/habits/new'
+    | '/habits'
   id:
     | '__root__'
     | '/'
     | '/habits'
+    | '/report'
     | '/settings'
     | '/widget'
     | '/habits/$id'
@@ -106,6 +124,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HabitsRoute: typeof HabitsRouteWithChildren
+  ReportRoute: typeof ReportRoute
   SettingsRoute: typeof SettingsRoute
   WidgetRoute: typeof WidgetRoute
 }
@@ -124,6 +143,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/report': {
+      id: '/report'
+      path: '/report'
+      fullPath: '/report'
+      preLoaderRoute: typeof ReportRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/habits': {
@@ -182,6 +208,7 @@ const HabitsRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HabitsRoute: HabitsRouteWithChildren,
+  ReportRoute: ReportRoute,
   SettingsRoute: SettingsRoute,
   WidgetRoute: WidgetRoute,
 }
