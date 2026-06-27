@@ -5,7 +5,7 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
-  // No server output — we want static assets bundled into the APK.
+  // No server output - we want static assets bundled into the APK.
   nitro: false,
   tanstackStart: {
     // Client-only SPA: emit a static shell index.html that boots the app.

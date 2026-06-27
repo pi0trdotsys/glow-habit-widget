@@ -2,7 +2,7 @@
 // widget. Web data lives in zustand (localStorage); the native widget can only
 // read Android SharedPreferences. @capacitor/preferences writes to the
 // "CapacitorStorage" SharedPreferences file (keys stored raw), which the widget
-// reads directly. No-op on web/PWA — only runs inside the native Capacitor app.
+// reads directly. No-op on web/PWA - only runs inside the native Capacitor app.
 import { Capacitor, registerPlugin } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
 import { useHabits } from "@/lib/habits/store";
@@ -66,7 +66,7 @@ async function mirror(): Promise<void> {
   try {
     await HabitWidget.refresh();
   } catch {
-    // plugin missing or no widget placed — fine
+    // plugin missing or no widget placed - fine
   }
 }
 

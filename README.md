@@ -1,8 +1,8 @@
-# Loop — Habit Tracker
+# Loop - Habit Tracker
 
 Build healthy habits and keep your streak alive. Loop is a fast, offline-first
 habit tracker that runs as a web app **and** as a native Android app with a real
-**home-screen widget** you can tick habits off from — without opening the app.
+**home-screen widget** you can tick habits off from - without opening the app.
 
 <p align="center">
   <img src="docs/screenshots/today.png" width="220" alt="Today screen" />
@@ -10,8 +10,8 @@ habit tracker that runs as a web app **and** as a native Android app with a real
   <img src="docs/screenshots/home-widget.png" width="220" alt="Native Android home-screen widget" />
 </p>
 
-> From left: Today, Weekly report, in-app widget view, and the **native
-> home-screen widget** showing today's progress with tap-to-complete.
+> From left: Today, Weekly report, and the **native home-screen widget**
+> showing today's progress with tap-to-complete.
 
 ## Download
 
@@ -19,7 +19,7 @@ Grab the latest signed APK from the
 [**Releases**](https://github.com/pi0trdotsys/glow-habit-widget/releases/latest)
 page and sideload it (you'll need to allow "install from unknown sources").
 
-> The app replaces any earlier TWA build of Loop — same package id
+> The app replaces any earlier TWA build of Loop - same package id
 > (`app.lovable.glow_habit_widget`). Uninstall the old one first if present.
 
 ## Features
@@ -27,8 +27,8 @@ page and sideload it (you'll need to allow "install from unknown sources").
 - **Daily / weekday / times-per-week** habit schedules
 - **Hold to complete** with streaks and weekly progress
 - **Weekly report** with per-habit breakdown
-- **Native home-screen widget** — today's habits, progress, and tap-to-toggle
-- **100% offline** — all data lives on-device (no account, no backend)
+- **Native home-screen widget** - today's habits, progress, and tap-to-toggle
+- **100% offline** - all data lives on-device (no account, no backend)
 
 ## Tech stack
 
@@ -44,13 +44,13 @@ widget can't read that, so habit data is bridged into Android `SharedPreferences
 
 ```
 Web app (Zustand → localStorage)
-   │  startWidgetBridge()  — native only, no-op on web
+   │  startWidgetBridge()  - native only, no-op on web
    ▼
 @capacitor/preferences  →  SharedPreferences "CapacitorStorage"
    │   widget_state  (today's snapshot)
    │   widget_pending (taps queued while the app is closed)
    ▼
-Native App Widget (RemoteViews) — renders habits + progress
+Native App Widget (RemoteViews) - renders habits + progress
    │   tap a habit → updates the snapshot + queues an absolute-state op
    ▼
 App reconciles the queue on next open (idempotent), then re-publishes
@@ -91,5 +91,5 @@ $ANDROID_HOME/build-tools/34.0.0/apksigner sign \
 Then install with `adb install -r loop-release.apk` and add the **Loop** widget
 from the launcher's widget picker.
 
-> The widget is empty until you open the app once — that first launch publishes
+> The widget is empty until you open the app once - that first launch publishes
 > the snapshot the widget reads.
