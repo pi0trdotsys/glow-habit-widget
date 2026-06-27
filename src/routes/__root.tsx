@@ -78,15 +78,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "Loop — Habit Tracker" },
+      { title: "Loop - Habit Tracker" },
       { name: "description", content: "Build healthy habits. Keep your streak alive." },
       { name: "theme-color", content: "#0f0f12" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "Loop" },
-      { property: "og:title", content: "Loop — Habit Tracker" },
+      { property: "og:title", content: "Loop - Habit Tracker" },
       { property: "og:description", content: "Build healthy habits. Keep your streak alive." },
       { property: "og:type", content: "website" },
+      { name: "twitter:title", content: "Loop - Habit Tracker" },
+      { name: "twitter:description", content: "Build healthy habits. Keep your streak alive." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/5ebe8d17-cac7-4450-bb49-299bedfb8569" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/5ebe8d17-cac7-4450-bb49-299bedfb8569" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       {
