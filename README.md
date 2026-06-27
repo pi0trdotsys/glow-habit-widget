@@ -7,7 +7,6 @@ habit tracker that runs as a web app **and** as a native Android app with a real
 <p align="center">
   <img src="docs/screenshots/today.png" width="220" alt="Today screen" />
   <img src="docs/screenshots/report.png" width="220" alt="Weekly report" />
-  <img src="docs/screenshots/widget-tab.png" width="220" alt="In-app widget view" />
   <img src="docs/screenshots/home-widget.png" width="220" alt="Native Android home-screen widget" />
 </p>
 
