@@ -8,6 +8,17 @@ const config: CapacitorConfig = {
   android: {
     // Allow http://localhost asset serving (default) and keep it self-contained.
   },
+  plugins: {
+    SplashScreen: {
+      launchShowDuration: 1400,
+      launchAutoHide: true,
+      backgroundColor: "#0b0d11",
+      androidScaleType: "CENTER_CROP",
+      showSpinner: false,
+      splashFullScreen: true,
+      splashImmersive: true,
+    },
+  },
 };
 
 export default config;

@@ -63,18 +63,9 @@ public class HabitRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
     @Override
     public void onDataSetChanged() {
         items.clear();
-        SharedPreferences p = context.getSharedPreferences(
-            HabitWidgetProvider.PREFS, Context.MODE_PRIVATE);
-        String json = p.getString(HabitWidgetProvider.STATE_KEY, null);
-        if (json == null) return;
-        try {
-            JSONArray habits = new JSONObject(json).optJSONArray("habits");
-            if (habits != null) {
-                for (int i = 0; i < habits.length(); i++) {
-                    items.add(habits.getJSONObject(i));
-                }
-            }
-        } catch (Exception ignored) {
+        JSONArray habits = WidgetShared.habits(context);
+        for (int i = 0; i < habits.length(); i++) {
+            items.add(habits.optJSONObject(i));
         }
     }
 
@@ -99,8 +90,8 @@ public class HabitRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         rv.setInt(R.id.row_check, "setTextColor", color);
 
         Intent fill = new Intent();
-        fill.putExtra(HabitWidgetProvider.EXTRA_HABIT_ID, h.optString("id"));
-        fill.putExtra(HabitWidgetProvider.EXTRA_DONE, done);
+        fill.putExtra(WidgetShared.EXTRA_HABIT_ID, h.optString("id"));
+        fill.putExtra(WidgetShared.EXTRA_DONE, done);
         rv.setOnClickFillInIntent(R.id.row_root, fill);
         return rv;
     }

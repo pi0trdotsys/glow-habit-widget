@@ -1,17 +1,22 @@
 # Loop - Habit Tracker
 
 Build healthy habits and keep your streak alive. Loop is a fast, offline-first
-habit tracker that runs as a web app **and** as a native Android app with a real
-**home-screen widget** you can tick habits off from - without opening the app.
+habit tracker that runs as a web app **and** as a native Android app with two
+**home-screen widgets** you can tick habits off from - without opening the app.
 
 <p align="center">
-  <img src="docs/screenshots/today.png" width="220" alt="Today screen" />
-  <img src="docs/screenshots/report.png" width="220" alt="Weekly report" />
-  <img src="docs/screenshots/home-widget.png" width="220" alt="Native Android home-screen widget" />
+  <img src="docs/screenshots/today.png" width="200" alt="Today screen" />
+  <img src="docs/screenshots/report.png" width="200" alt="Weekly report" />
+  <img src="docs/screenshots/splash.png" width="200" alt="Splash screen" />
+</p>
+<p align="center">
+  <img src="docs/screenshots/widget-icons.png" width="200" alt="Icon widget with progress ring and day countdown" />
+  <img src="docs/screenshots/home-widget.png" width="200" alt="List widget" />
 </p>
 
-> From left: Today, Weekly report, and the **native home-screen widget**
-> showing today's progress with tap-to-complete.
+> Top: Today, Weekly report, splash screen. Bottom: the two **home-screen
+> widgets** - an icon widget (progress ring + time left in the day) and a simple
+> list, both with tap-to-complete.
 
 ## Download
 
@@ -27,7 +32,10 @@ page and sideload it (you'll need to allow "install from unknown sources").
 - **Daily / weekday / times-per-week** habit schedules
 - **Hold to complete** with streaks and weekly progress
 - **Weekly report** with per-habit breakdown
-- **Native home-screen widget** - today's habits, progress, and tap-to-toggle
+- **Two native home-screen widgets** (both 4x2, tap-to-toggle):
+  - **Icon widget** - habit icons, a progress ring, and time left in the day
+  - **List widget** - today's habits as a simple list with progress
+- **Minimalist splash screen** and a custom adaptive app icon
 - **100% offline** - all data lives on-device (no account, no backend)
 
 ## Tech stack
@@ -35,7 +43,8 @@ page and sideload it (you'll need to allow "install from unknown sources").
 - [TanStack Start](https://tanstack.com/start) (React 19, file-based routing)
 - Tailwind CSS v4, Radix UI, Zustand (persisted to `localStorage`)
 - [Capacitor](https://capacitorjs.com/) for the native Android shell
-- A native Android **App Widget** (Java, `RemoteViews`)
+- Two native Android **App Widgets** (Java, `RemoteViews`; icons from lucide
+  converted to vector drawables, progress ring drawn on a `Canvas`)
 
 ## How the home-screen widget works
 
@@ -50,7 +59,8 @@ Web app (Zustand → localStorage)
    │   widget_state  (today's snapshot)
    │   widget_pending (taps queued while the app is closed)
    ▼
-Native App Widget (RemoteViews) - renders habits + progress
+Both App Widgets (RemoteViews) - render habits + progress; the icon widget
+   │   also computes time-left-in-day natively
    │   tap a habit → updates the snapshot + queues an absolute-state op
    ▼
 App reconciles the queue on next open (idempotent), then re-publishes

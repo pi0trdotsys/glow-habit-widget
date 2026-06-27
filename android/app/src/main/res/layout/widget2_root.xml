@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget2_bg"
+    android:padding="14dp">
+
+    <LinearLayout android:id="@+id/widget2_header"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:paddingBottom="8dp">
+        <ImageView android:id="@+id/widget2_ring" android:layout_width="56dp"
+            android:layout_height="56dp" android:contentDescription="Progress" />
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical">
+            <TextView android:id="@+id/widget2_title" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="Today" android:textColor="#f4f5f9"
+                android:textSize="17sp" android:textStyle="bold" />
+            <TextView android:id="@+id/widget2_timeleft" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text=""
+                android:textColor="#60e7b4" android:textSize="12sp" android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+        <LinearLayout android:id="@+id/widget2_row1"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:weightSum="4" android:layout_marginTop="2dp">
+            <LinearLayout android:id="@+id/cell0_root"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical"
+                android:gravity="center" android:paddingTop="2dp" android:paddingBottom="2dp">
+                <FrameLayout android:layout_width="44dp" android:layout_height="44dp">
+                    <ImageView android:id="@+id/cell0_bg" android:layout_width="match_parent"
+                        android:layout_height="match_parent" android:src="@drawable/widget2_chip"
+                        android:contentDescription="" />
+                    <ImageView android:id="@+id/cell0_icon" android:layout_width="22dp"
+                        android:layout_height="22dp" android:layout_gravity="center"
+                        android:contentDescription="" />
+                </FrameLayout>
+                <TextView android:id="@+id/cell0_name" android:layout_width="56dp"
+                    android:layout_height="wrap_content" android:layout_marginTop="3dp"
+                    android:gravity="center" android:maxLines="1" android:ellipsize="end"
+                    android:textColor="#9398a5" android:textSize="9sp" />
+            </LinearLayout>
+            <LinearLayout android:id="@+id/cell1_root"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical"
+                android:gravity="center" android:paddingTop="2dp" android:paddingBottom="2dp">
+                <FrameLayout android:layout_width="44dp" android:layout_height="44dp">
+                    <ImageView android:id="@+id/cell1_bg" android:layout_width="match_parent"
+                        android:layout_height="match_parent" android:src="@drawable/widget2_chip"
+                        android:contentDescription="" />
+                    <ImageView android:id="@+id/cell1_icon" android:layout_width="22dp"
+                        android:layout_height="22dp" android:layout_gravity="center"
+                        android:contentDescription="" />
+                </FrameLayout>
+                <TextView android:id="@+id/cell1_name" android:layout_width="56dp"
+                    android:layout_height="wrap_content" android:layout_marginTop="3dp"
+                    android:gravity="center" android:maxLines="1" android:ellipsize="end"
+                    android:textColor="#9398a5" android:textSize="9sp" />
+            </LinearLayout>
+            <LinearLayout android:id="@+id/cell2_root"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical"
+                android:gravity="center" android:paddingTop="2dp" android:paddingBottom="2dp">
+                <FrameLayout android:layout_width="44dp" android:layout_height="44dp">
+                    <ImageView android:id="@+id/cell2_bg" android:layout_width="match_parent"
+                        android:layout_height="match_parent" android:src="@drawable/widget2_chip"
+                        android:contentDescription="" />
+                    <ImageView android:id="@+id/cell2_icon" android:layout_width="22dp"
+                        android:layout_height="22dp" android:layout_gravity="center"
+                        android:contentDescription="" />
+                </FrameLayout>
+                <TextView android:id="@+id/cell2_name" android:layout_width="56dp"
+                    android:layout_height="wrap_content" android:layout_marginTop="3dp"
+                    android:gravity="center" android:maxLines="1" android:ellipsize="end"
+                    android:textColor="#9398a5" android:textSize="9sp" />
+            </LinearLayout>
+            <LinearLayout android:id="@+id/cell3_root"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical"
+                android:gravity="center" android:paddingTop="2dp" android:paddingBottom="2dp">
+                <FrameLayout android:layout_width="44dp" android:layout_height="44dp">
+                    <ImageView android:id="@+id/cell3_bg" android:layout_width="match_parent"
+                        android:layout_height="match_parent" android:src="@drawable/widget2_chip"
+                        android:contentDescription="" />
+                    <ImageView android:id="@+id/cell3_icon" android:layout_width="22dp"
+                        android:layout_height="22dp" android:layout_gravity="center"
+                        android:contentDescription="" />
+                </FrameLayout>
+                <TextView android:id="@+id/cell3_name" android:layout_width="56dp"
+                    android:layout_height="wrap_content" android:layout_marginTop="3dp"
+                    android:gravity="center" android:maxLines="1" android:ellipsize="end"
+                    android:textColor="#9398a5" android:textSize="9sp" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:id="@+id/widget2_row2"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:weightSum="4" android:layout_marginTop="2dp">
+            <LinearLayout android:id="@+id/cell4_root"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical"
+                android:gravity="center" android:paddingTop="2dp" android:paddingBottom="2dp">
+                <FrameLayout android:layout_width="44dp" android:layout_height="44dp">
+                    <ImageView android:id="@+id/cell4_bg" android:layout_width="match_parent"
+                        android:layout_height="match_parent" android:src="@drawable/widget2_chip"
+                        android:contentDescription="" />
+                    <ImageView android:id="@+id/cell4_icon" android:layout_width="22dp"
+                        android:layout_height="22dp" android:layout_gravity="center"
+                        android:contentDescription="" />
+                </FrameLayout>
+                <TextView android:id="@+id/cell4_name" android:layout_width="56dp"
+                    android:layout_height="wrap_content" android:layout_marginTop="3dp"
+                    android:gravity="center" android:maxLines="1" android:ellipsize="end"
+                    android:textColor="#9398a5" android:textSize="9sp" />
+            </LinearLayout>
+            <LinearLayout android:id="@+id/cell5_root"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical"
+                android:gravity="center" android:paddingTop="2dp" android:paddingBottom="2dp">
+                <FrameLayout android:layout_width="44dp" android:layout_height="44dp">
+                    <ImageView android:id="@+id/cell5_bg" android:layout_width="match_parent"
+                        android:layout_height="match_parent" android:src="@drawable/widget2_chip"
+                        android:contentDescription="" />
+                    <ImageView android:id="@+id/cell5_icon" android:layout_width="22dp"
+                        android:layout_height="22dp" android:layout_gravity="center"
+                        android:contentDescription="" />
+                </FrameLayout>
+                <TextView android:id="@+id/cell5_name" android:layout_width="56dp"
+                    android:layout_height="wrap_content" android:layout_marginTop="3dp"
+                    android:gravity="center" android:maxLines="1" android:ellipsize="end"
+                    android:textColor="#9398a5" android:textSize="9sp" />
+            </LinearLayout>
+            <LinearLayout android:id="@+id/cell6_root"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical"
+                android:gravity="center" android:paddingTop="2dp" android:paddingBottom="2dp">
+                <FrameLayout android:layout_width="44dp" android:layout_height="44dp">
+                    <ImageView android:id="@+id/cell6_bg" android:layout_width="match_parent"
+                        android:layout_height="match_parent" android:src="@drawable/widget2_chip"
+                        android:contentDescription="" />
+                    <ImageView android:id="@+id/cell6_icon" android:layout_width="22dp"
+                        android:layout_height="22dp" android:layout_gravity="center"
+                        android:contentDescription="" />
+                </FrameLayout>
+                <TextView android:id="@+id/cell6_name" android:layout_width="56dp"
+                    android:layout_height="wrap_content" android:layout_marginTop="3dp"
+                    android:gravity="center" android:maxLines="1" android:ellipsize="end"
+                    android:textColor="#9398a5" android:textSize="9sp" />
+            </LinearLayout>
+            <LinearLayout android:id="@+id/cell7_root"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical"
+                android:gravity="center" android:paddingTop="2dp" android:paddingBottom="2dp">
+                <FrameLayout android:layout_width="44dp" android:layout_height="44dp">
+                    <ImageView android:id="@+id/cell7_bg" android:layout_width="match_parent"
+                        android:layout_height="match_parent" android:src="@drawable/widget2_chip"
+                        android:contentDescription="" />
+                    <ImageView android:id="@+id/cell7_icon" android:layout_width="22dp"
+                        android:layout_height="22dp" android:layout_gravity="center"
+                        android:contentDescription="" />
+                </FrameLayout>
+                <TextView android:id="@+id/cell7_name" android:layout_width="56dp"
+                    android:layout_height="wrap_content" android:layout_marginTop="3dp"
+                    android:gravity="center" android:maxLines="1" android:ellipsize="end"
+                    android:textColor="#9398a5" android:textSize="9sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+    <TextView android:id="@+id/widget2_empty"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" android:gravity="center" android:text="No habits today"
+        android:textColor="#9398a5" android:textSize="13sp" android:visibility="gone" />
+</LinearLayout>

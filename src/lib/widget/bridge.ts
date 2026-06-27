@@ -49,6 +49,7 @@ function buildState() {
   const rows = due.map((h) => ({
     id: h.id,
     name: h.name,
+    icon: h.icon,
     colorHex: COLOR_HEX[h.color] ?? COLOR_HEX.mint,
     done: completions.some((c) => c.habitId === h.id && c.date === key),
   }));
