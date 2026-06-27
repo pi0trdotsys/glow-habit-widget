@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { startWidgetBridge } from "../lib/widget/bridge";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -125,6 +126,11 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    // Mirror habit data to the native Android home-screen widget. No-op on web.
+    startWidgetBridge();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

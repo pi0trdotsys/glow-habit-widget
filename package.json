@@ -7,11 +7,14 @@
     "dev": "vite dev",
     "build": "vite build",
     "build:dev": "vite build --mode development",
+    "build:cap": "vite build --config vite.config.capacitor.ts && cp dist/client/_shell.html dist/client/index.html",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@capacitor/core": "^8.4.1",
+    "@capacitor/preferences": "^8.0.1",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -69,6 +72,8 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.4.1",
+    "@capacitor/cli": "^8.4.1",
     "@eslint/js": "^9.32.0",
     "@lovable.dev/vite-tanstack-config": "2.6.2",
     "@types/node": "^22.16.5",
