@@ -3,16 +3,33 @@
 import fs from "node:fs";
 import path from "node:path";
 
+// Keep in sync with HABIT_ICONS in src/lib/habits/colors.ts. "Tooth" is NOT
+// here - it has no lucide source and ships as a hand-written ic_habit_tooth.xml.
 const ICONS = [
   "Droplet", "Activity", "BookOpen", "Sparkles", "Apple", "Dumbbell",
   "Brain", "Footprints", "Bike", "Heart", "Moon", "Sun", "Coffee",
   "Leaf", "Music", "PenLine", "Phone", "Pill", "Smile", "Bed",
+  // Added:
+  "Droplets", "Bath", "Brush", "Hand", "HandHeart", "HeartPulse",
+  "Stethoscope", "Waves", "Flame", "Trophy", "Target", "Star", "Zap",
+  "Salad", "Carrot", "Egg", "Fish", "Cookie", "Utensils", "GlassWater",
+  "CupSoda", "GraduationCap", "NotebookPen", "Languages", "Code", "Laptop",
+  "Calculator", "Briefcase", "Wallet", "PiggyBank", "Camera", "Palette",
+  "Guitar", "Headphones", "Film", "Gamepad2", "Sprout", "Flower2",
+  "TreePine", "MountainSnow", "Sunrise", "Sunset", "CloudRain", "Wind",
+  "Dog", "Recycle", "Shirt", "Scissors", "Glasses", "Feather", "Mic",
 ];
 
 const SRC = "node_modules/lucide-react/dist/esm/icons";
 const OUT = "android/app/src/main/res/drawable";
 
-const pascalToKebab = (s) => s.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+// lucide source files: dash before an uppercase AND before a trailing digit
+// (e.g. Gamepad2 -> gamepad-2.js, Flower2 -> flower-2.js).
+const pascalToKebab = (s) =>
+  s.replace(/([a-z0-9])([A-Z])/g, "$1-$2").replace(/([a-zA-Z])([0-9])/g, "$1-$2").toLowerCase();
+// output drawable name must match WidgetShared.pascalToSnake (no separator
+// before digits): Gamepad2 -> gamepad2, HeartPulse -> heart_pulse.
+const pascalToSnake = (s) => s.replace(/([a-zA-Z0-9])([A-Z])/g, "$1_$2").toLowerCase();
 const num = (v) => (typeof v === "number" ? +v.toFixed(3) : v);
 
 function nodeToPath([type, a]) {
@@ -75,7 +92,7 @@ for (const name of ICONS) {
 ${paths}
 </vector>
 `;
-  const snake = pascalToKebab(name).replace(/-/g, "_");
+  const snake = pascalToSnake(name);
   fs.writeFileSync(path.join(OUT, `ic_habit_${snake}.xml`), xml);
   count++;
 }

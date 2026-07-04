@@ -8,7 +8,7 @@ import { HABIT_COLOR_VAR, HABIT_COLORS, HABIT_ICONS } from "@/lib/habits/colors"
 import type { HabitColor, HabitScheduleType } from "@/lib/habits/types";
 
 export const Route = createFileRoute("/habits/new")({
-  head: () => ({ meta: [{ title: "New habit — Loop" }] }),
+  head: () => ({ meta: [{ title: "New habit - Loop" }] }),
   component: NewHabit,
 });
 
@@ -25,6 +25,8 @@ function NewHabit() {
   const [type, setType] = useState<HabitScheduleType>("daily");
   const [days, setDays] = useState<number[]>([1, 2, 3, 4, 5]);
   const [target, setTarget] = useState(3);
+  const [reminderOn, setReminderOn] = useState(false);
+  const [reminderTime, setReminderTime] = useState("08:00");
 
   const canSave = name.trim().length > 0 && count < 24;
 
@@ -40,6 +42,7 @@ function NewHabit() {
           : type === "weekdays"
           ? { type: "weekdays", days }
           : { type: "timesPerWeek", target },
+      reminder: reminderOn ? reminderTime : null,
     });
     navigate({ to: "/" });
   };
@@ -178,6 +181,38 @@ function NewHabit() {
               </button>
             </div>
           )}
+        </Section>
+
+        <Section title="Reminder">
+          <div className="rounded-2xl bg-card p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Remind me daily</span>
+              <label className="relative inline-flex h-6 w-11 cursor-pointer items-center">
+                <input
+                  type="checkbox"
+                  className="peer sr-only"
+                  checked={reminderOn}
+                  onChange={(e) => setReminderOn(e.target.checked)}
+                />
+                <span className="absolute inset-0 rounded-full bg-muted peer-checked:bg-primary transition-colors" />
+                <span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-background transition-transform peer-checked:translate-x-5" />
+              </label>
+            </div>
+            {reminderOn && (
+              <div className="mt-3 flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">Time</span>
+                <input
+                  type="time"
+                  value={reminderTime}
+                  onChange={(e) => setReminderTime(e.target.value)}
+                  className="rounded-xl border border-border bg-background px-3 py-1.5 text-sm outline-none"
+                />
+              </div>
+            )}
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              A notification at this time each day. Enable notifications in Settings.
+            </p>
+          </div>
         </Section>
 
         {count >= 24 && (

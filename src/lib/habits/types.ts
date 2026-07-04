@@ -25,6 +25,8 @@ export interface Habit {
   color: HabitColor;
   schedule: HabitSchedule;
   createdAt: string; // ISO
+  /** Optional per-habit reminder time, "HH:mm" local. Undefined = no reminder. */
+  reminder?: string | null;
 }
 
 export interface Completion {

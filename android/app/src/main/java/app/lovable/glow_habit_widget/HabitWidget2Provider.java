@@ -47,6 +47,7 @@ public class HabitWidget2Provider extends AppWidgetProvider {
     }
 
     static void updateWidget(Context context, AppWidgetManager mgr, int widgetId) {
+        WidgetShared.normalizeIfStale(context);
         RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget2_root);
 
         JSONArray habits = WidgetShared.habits(context);
@@ -122,12 +123,19 @@ public class HabitWidget2Provider extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
-        if (WidgetShared.ACTION_TOGGLE.equals(intent.getAction())) {
+        String action = intent.getAction();
+        if (WidgetShared.ACTION_TOGGLE.equals(action)) {
             String habitId = intent.getStringExtra(WidgetShared.EXTRA_HABIT_ID);
             boolean currentlyDone = intent.getBooleanExtra(WidgetShared.EXTRA_DONE, false);
             if (habitId != null) {
                 WidgetShared.applyToggle(context, habitId, !currentlyDone);
             }
+            WidgetShared.updateAll(context);
+        } else if (Intent.ACTION_DATE_CHANGED.equals(action)
+                || Intent.ACTION_TIME_CHANGED.equals(action)
+                || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
+            // New day (or clock change): reset the snapshot and re-render.
+            WidgetShared.normalizeIfStale(context);
             WidgetShared.updateAll(context);
         }
     }

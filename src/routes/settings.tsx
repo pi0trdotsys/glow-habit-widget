@@ -1,19 +1,28 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Download, Upload, RotateCcw, Smartphone, Bell, User } from "lucide-react";
+import { Download, Upload, RotateCcw, Smartphone, Bell, User, CalendarCheck } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useHabits } from "@/lib/habits/store";
 import {
-  cancelDailyReminder,
-  notificationsSupported,
+  getPermissionState,
   requestNotificationPermission,
-  scheduleDailyReminder,
+  type PermissionState,
 } from "@/lib/notifications";
 
 export const Route = createFileRoute("/settings")({
-  head: () => ({ meta: [{ title: "Settings — Loop" }] }),
+  head: () => ({ meta: [{ title: "Settings - Loop" }] }),
   component: SettingsPage,
 });
+
+const DAY_NAMES = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
 
 function SettingsPage() {
   const exportData = useHabits((s) => s.exportData);
@@ -26,20 +35,22 @@ function SettingsPage() {
   const [nameDraft, setNameDraft] = useState(userName ?? "");
   useEffect(() => setNameDraft(userName ?? ""), [userName]);
 
-  const [permission, setPermission] = useState<NotificationPermission | "unsupported">(
-    typeof window !== "undefined" && notificationsSupported()
-      ? Notification.permission
-      : "unsupported",
-  );
+  const [permission, setPermission] = useState<PermissionState>("default");
 
   useEffect(() => {
-    if (notif.enabled && permission === "granted") {
-      scheduleDailyReminder(notif.time, "Check in on your habits.");
-    } else {
-      cancelDailyReminder();
+    void getPermissionState().then(setPermission);
+  }, []);
+
+  // Turning any reminder on needs permission first; grab it lazily.
+  const ensurePermission = async (): Promise<boolean> => {
+    let p = permission;
+    if (p !== "granted") {
+      p = await requestNotificationPermission();
+      setPermission(p);
     }
-    return () => cancelDailyReminder();
-  }, [notif.enabled, notif.time, permission]);
+    if (p !== "granted") setMsg("Notifications were not allowed.");
+    return p === "granted";
+  };
 
   const fileRef = useRef<HTMLInputElement>(null);
   const [msg, setMsg] = useState<string | null>(null);
@@ -103,26 +114,19 @@ function SettingsPage() {
               <Bell size={18} className="text-primary" />
               <span className="font-medium">Daily reminder</span>
             </div>
-            <label className="relative inline-flex h-6 w-11 cursor-pointer items-center">
-              <input
-                type="checkbox"
-                className="peer sr-only"
-                checked={notif.enabled}
-                disabled={permission === "unsupported"}
-                onChange={async (e) => {
-                  if (e.target.checked) {
-                    const p = await requestNotificationPermission();
-                    setPermission(p);
-                    setNotifications({ ...notif, enabled: p === "granted" });
-                    if (p !== "granted") setMsg("Notifications were not allowed.");
-                  } else {
-                    setNotifications({ ...notif, enabled: false });
+            <Toggle
+              checked={notif.enabled}
+              disabled={permission === "unsupported"}
+              onChange={async (on) => {
+                if (on) {
+                  if (await ensurePermission()) {
+                    setNotifications({ ...notif, enabled: true });
                   }
-                }}
-              />
-              <span className="absolute inset-0 rounded-full bg-muted peer-checked:bg-primary transition-colors" />
-              <span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-background transition-transform peer-checked:translate-x-5" />
-            </label>
+                } else {
+                  setNotifications({ ...notif, enabled: false });
+                }
+              }}
+            />
           </div>
           <div className="mt-3 flex items-center justify-between">
             <span className="text-xs text-muted-foreground">Reminder time</span>
@@ -136,7 +140,7 @@ function SettingsPage() {
           </div>
           {permission === "denied" && (
             <p className="mt-2 text-[11px] text-destructive">
-              Notifications are blocked. Enable them in your browser settings.
+              Notifications are blocked. Enable them in your system settings.
             </p>
           )}
           {permission === "unsupported" && (
@@ -145,7 +149,60 @@ function SettingsPage() {
             </p>
           )}
           <p className="mt-2 text-[11px] text-muted-foreground">
-            Reminders fire only while the app is open. Add Loop to your home screen for the best experience.
+            Set a per-habit time on each habit's page for task-specific reminders.
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-card p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <CalendarCheck size={18} className="text-primary" />
+              <span className="font-medium">Weekly recap</span>
+            </div>
+            <Toggle
+              checked={notif.weeklyReport}
+              disabled={permission === "unsupported"}
+              onChange={async (on) => {
+                if (on) {
+                  if (await ensurePermission()) {
+                    setNotifications({ ...notif, weeklyReport: true });
+                  }
+                } else {
+                  setNotifications({ ...notif, weeklyReport: false });
+                }
+              }}
+            />
+          </div>
+          <div className="mt-3 flex items-center justify-between gap-2">
+            <span className="text-xs text-muted-foreground">Day &amp; time</span>
+            <div className="flex gap-2">
+              <select
+                value={notif.reportDay}
+                onChange={(e) =>
+                  setNotifications({ ...notif, reportDay: Number(e.target.value) })
+                }
+                disabled={!notif.weeklyReport}
+                className="rounded-xl border border-border bg-background px-2 py-1.5 text-sm outline-none disabled:opacity-50"
+              >
+                {DAY_NAMES.map((d, i) => (
+                  <option key={i} value={i}>
+                    {d}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="time"
+                value={notif.reportTime}
+                onChange={(e) =>
+                  setNotifications({ ...notif, reportTime: e.target.value })
+                }
+                disabled={!notif.weeklyReport}
+                className="rounded-xl border border-border bg-background px-3 py-1.5 text-sm outline-none disabled:opacity-50"
+              />
+            </div>
+          </div>
+          <p className="mt-2 text-[11px] text-muted-foreground">
+            A weekly nudge to compare this week's habits against last week.
           </p>
         </div>
 
@@ -189,6 +246,30 @@ function SettingsPage() {
         </p>
       </div>
     </AppShell>
+  );
+}
+
+function Toggle({
+  checked,
+  disabled,
+  onChange,
+}: {
+  checked: boolean;
+  disabled?: boolean;
+  onChange: (on: boolean) => void;
+}) {
+  return (
+    <label className="relative inline-flex h-6 w-11 cursor-pointer items-center">
+      <input
+        type="checkbox"
+        className="peer sr-only"
+        checked={checked}
+        disabled={disabled}
+        onChange={(e) => onChange(e.target.checked)}
+      />
+      <span className="absolute inset-0 rounded-full bg-muted peer-checked:bg-primary transition-colors" />
+      <span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-background transition-transform peer-checked:translate-x-5" />
+    </label>
   );
 }
 

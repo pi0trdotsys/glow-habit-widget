@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ChevronLeft, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { ChevronLeft, Trash2, Bell } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { HabitIcon } from "@/components/HabitIcon";
 import { useHabits } from "@/lib/habits/store";
@@ -14,7 +15,7 @@ import {
 } from "@/lib/habits/utils";
 
 export const Route = createFileRoute("/habits/$id")({
-  head: () => ({ meta: [{ title: "Habit — Loop" }] }),
+  head: () => ({ meta: [{ title: "Habit - Loop" }] }),
   component: HabitDetail,
 });
 
@@ -25,6 +26,7 @@ function HabitDetail() {
   const completions = useHabits((s) => s.completions);
   const removeHabit = useHabits((s) => s.removeHabit);
   const setCompletion = useHabits((s) => s.setCompletion);
+  const updateHabit = useHabits((s) => s.updateHabit);
 
   if (!habit) {
     return (
@@ -93,6 +95,14 @@ function HabitDetail() {
         <Stat label="30-day rate" value={`${rate}%`} accent={color} />
       </div>
 
+      <div className="mt-3 px-5">
+        <ReminderCard
+          value={habit.reminder ?? null}
+          accent={color}
+          onChange={(r) => updateHabit(habit.id, { reminder: r })}
+        />
+      </div>
+
       <section className="mt-8 px-5">
         <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
           Last 12 weeks · tap to edit
@@ -125,6 +135,58 @@ function HabitDetail() {
         </p>
       </section>
     </AppShell>
+  );
+}
+
+function ReminderCard({
+  value,
+  accent,
+  onChange,
+}: {
+  value: string | null;
+  accent: string;
+  onChange: (reminder: string | null) => void;
+}) {
+  const on = value != null;
+  const [time, setTime] = useState(value ?? "08:00");
+
+  return (
+    <div className="rounded-2xl bg-card p-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Bell size={18} style={{ color: accent }} />
+          <span className="font-medium">Daily reminder</span>
+        </div>
+        <label className="relative inline-flex h-6 w-11 cursor-pointer items-center">
+          <input
+            type="checkbox"
+            className="peer sr-only"
+            checked={on}
+            onChange={(e) => onChange(e.target.checked ? time : null)}
+          />
+          <span className="absolute inset-0 rounded-full bg-muted peer-checked:bg-primary transition-colors" />
+          <span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-background transition-transform peer-checked:translate-x-5" />
+        </label>
+      </div>
+      {on && (
+        <div className="mt-3 flex items-center justify-between">
+          <span className="text-xs text-muted-foreground">Time</span>
+          <input
+            type="time"
+            value={time}
+            onChange={(e) => {
+              setTime(e.target.value);
+              onChange(e.target.value);
+            }}
+            className="rounded-xl border border-border bg-background px-3 py-1.5 text-sm outline-none"
+          />
+        </div>
+      )}
+      <p className="mt-2 text-[11px] text-muted-foreground">
+        Get a notification for this habit at this time each day. Turn on
+        notifications in Settings first.
+      </p>
+    </div>
   );
 }
 

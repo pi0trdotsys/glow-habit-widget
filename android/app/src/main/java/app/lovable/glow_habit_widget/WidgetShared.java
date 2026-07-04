@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * Shared state + helpers for both home-screen widgets. The web app mirrors a
@@ -46,6 +47,40 @@ final class WidgetShared {
             return a != null ? a : new JSONArray();
         } catch (Exception e) {
             return new JSONArray();
+        }
+    }
+
+    /** Today's date as YYYY-MM-DD in local time (matches the web app's keys). */
+    static String today() {
+        Calendar c = Calendar.getInstance();
+        return String.format(Locale.US, "%04d-%02d-%02d",
+            c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH));
+    }
+
+    /**
+     * If the mirrored snapshot is from a previous day, reset it for today: clear
+     * every habit's "done" flag and the count, and stamp today's date. This makes
+     * the widget show a fresh, unchecked day at midnight even if the app hasn't
+     * been opened. The app republishes the correct due-list on next open.
+     * Pending taps are left untouched (they carry their own date).
+     */
+    static void normalizeIfStale(Context c) {
+        SharedPreferences p = prefs(c);
+        String json = p.getString(STATE_KEY, null);
+        if (json == null) return;
+        try {
+            JSONObject o = new JSONObject(json);
+            if (today().equals(o.optString("date", ""))) return;
+            o.put("date", today());
+            JSONArray habits = o.optJSONArray("habits");
+            if (habits != null) {
+                for (int i = 0; i < habits.length(); i++) {
+                    habits.getJSONObject(i).put("done", false);
+                }
+            }
+            o.put("doneCount", 0);
+            p.edit().putString(STATE_KEY, o.toString()).apply();
+        } catch (Exception ignored) {
         }
     }
 
@@ -85,6 +120,8 @@ final class WidgetShared {
 
     /** Applies a toggle to the snapshot and queues an idempotent op for the app. */
     static void applyToggle(Context context, String habitId, boolean newDone) {
+        // A tap on a new day should act on today, not yesterday's snapshot.
+        normalizeIfStale(context);
         SharedPreferences p = prefs(context);
         try {
             String json = p.getString(STATE_KEY, null);

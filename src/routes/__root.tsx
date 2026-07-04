@@ -9,9 +9,12 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
+import { Capacitor } from "@capacitor/core";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { startWidgetBridge } from "../lib/widget/bridge";
+import { syncNotifications } from "../lib/notifications";
+import { useHabits } from "../lib/habits/store";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -126,11 +129,43 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
 
   useEffect(() => {
     // Mirror habit data to the native Android home-screen widget. No-op on web.
     startWidgetBridge();
   }, []);
+
+  useEffect(() => {
+    // Schedule reminders, and reschedule (debounced) whenever habits or
+    // notification settings change - keeps per-habit + weekly recap in sync.
+    void syncNotifications();
+    let t: ReturnType<typeof setTimeout> | undefined;
+    const unsub = useHabits.subscribe(() => {
+      if (t) clearTimeout(t);
+      t = setTimeout(() => void syncNotifications(), 400);
+    });
+    return () => {
+      if (t) clearTimeout(t);
+      unsub();
+    };
+  }, []);
+
+  useEffect(() => {
+    // Tapping the weekly recap notification opens the report (native only).
+    if (!Capacitor.isNativePlatform()) return;
+    let remove: (() => void) | undefined;
+    void import("@capacitor/local-notifications").then(({ LocalNotifications }) => {
+      LocalNotifications.addListener("localNotificationActionPerformed", (e) => {
+        if (e.notification.extra?.route === "/report") {
+          router.navigate({ to: "/report" });
+        }
+      }).then((h) => {
+        remove = () => void h.remove();
+      });
+    });
+    return () => remove?.();
+  }, [router]);
 
   return (
     <QueryClientProvider client={queryClient}>

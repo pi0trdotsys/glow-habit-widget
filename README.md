@@ -31,10 +31,17 @@ page and sideload it (you'll need to allow "install from unknown sources").
 
 - **Daily / weekday / times-per-week** habit schedules
 - **Hold to complete** with streaks and weekly progress
+- **70+ habit icons** to pick from (hygiene, fitness, food, mind, work,
+  nature and more, including a dedicated tooth icon for brushing habits)
+- **Native notifications**:
+  - **Per-habit reminders** - set a time on any habit's page to be nudged daily
+  - **Daily check-in** reminder at a time you choose
+  - **Weekly recap** notification that nudges you to compare this week vs last
 - **Weekly report** with per-habit breakdown
 - **Two native home-screen widgets** (both 4x2, tap-to-toggle):
   - **Icon widget** - habit icons, a progress ring, and time left in the day
   - **List widget** - today's habits as a simple list with progress
+  - both **reset automatically at midnight** for the new day
 - **Minimalist splash screen** and a custom adaptive app icon
 - **100% offline** - all data lives on-device (no account, no backend)
 
@@ -43,6 +50,7 @@ page and sideload it (you'll need to allow "install from unknown sources").
 - [TanStack Start](https://tanstack.com/start) (React 19, file-based routing)
 - Tailwind CSS v4, Radix UI, Zustand (persisted to `localStorage`)
 - [Capacitor](https://capacitorjs.com/) for the native Android shell
+  (Preferences, Splash Screen, Local Notifications plugins)
 - Two native Android **App Widgets** (Java, `RemoteViews`; icons from lucide
   converted to vector drawables, progress ring drawn on a `Canvas`)
 

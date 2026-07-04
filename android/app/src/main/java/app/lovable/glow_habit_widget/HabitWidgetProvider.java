@@ -21,6 +21,7 @@ public class HabitWidgetProvider extends AppWidgetProvider {
     }
 
     static void updateWidget(Context context, AppWidgetManager mgr, int widgetId) {
+        WidgetShared.normalizeIfStale(context);
         RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget_root);
         rv.setTextViewText(R.id.widget_title, headerTitle(context));
         rv.setTextViewText(R.id.widget_subtitle, headerSubtitle(context));
@@ -70,12 +71,18 @@ public class HabitWidgetProvider extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
-        if (WidgetShared.ACTION_TOGGLE.equals(intent.getAction())) {
+        String action = intent.getAction();
+        if (WidgetShared.ACTION_TOGGLE.equals(action)) {
             String habitId = intent.getStringExtra(WidgetShared.EXTRA_HABIT_ID);
             boolean currentlyDone = intent.getBooleanExtra(WidgetShared.EXTRA_DONE, false);
             if (habitId != null) {
                 WidgetShared.applyToggle(context, habitId, !currentlyDone);
             }
+            WidgetShared.updateAll(context);
+        } else if (Intent.ACTION_DATE_CHANGED.equals(action)
+                || Intent.ACTION_TIME_CHANGED.equals(action)
+                || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
+            WidgetShared.normalizeIfStale(context);
             WidgetShared.updateAll(context);
         }
     }

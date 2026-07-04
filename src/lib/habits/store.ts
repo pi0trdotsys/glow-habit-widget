@@ -3,17 +3,33 @@ import { persist } from "zustand/middleware";
 import type { Completion, Habit, HabitColor, HabitSchedule } from "./types";
 import { todayKey } from "./utils";
 
+export interface NotificationSettings {
+  /** Master daily check-in reminder. */
+  enabled: boolean;
+  time: string; // "HH:mm"
+  /** Weekly recap nudge comparing this week vs last week. */
+  weeklyReport: boolean;
+  /** Day of week for the weekly recap. 0 = Sunday ... 6 = Saturday. */
+  reportDay: number;
+  reportTime: string; // "HH:mm"
+}
+
+const defaultNotifications: NotificationSettings = {
+  enabled: false,
+  time: "20:00",
+  weeklyReport: false,
+  reportDay: 0, // Sunday
+  reportTime: "19:00",
+};
+
 interface HabitsState {
   habits: Habit[];
   completions: Completion[];
   seeded: boolean;
   userName: string | null;
   setUserName: (name: string) => void;
-  notifications: {
-    enabled: boolean;
-    time: string; // "HH:mm"
-  };
-  setNotifications: (n: { enabled: boolean; time: string }) => void;
+  notifications: NotificationSettings;
+  setNotifications: (n: NotificationSettings) => void;
   addHabit: (h: Omit<Habit, "id" | "createdAt">) => string;
   updateHabit: (id: string, patch: Partial<Omit<Habit, "id">>) => void;
   removeHabit: (id: string) => void;
@@ -47,7 +63,7 @@ export const useHabits = create<HabitsState>()(
       seeded: false,
       userName: null,
       setUserName: (name) => set({ userName: name.trim() || null }),
-      notifications: { enabled: false, time: "20:00" },
+      notifications: defaultNotifications,
       setNotifications: (n) => set({ notifications: n }),
       addHabit: (h) => {
         const id = uid();
@@ -123,7 +139,19 @@ export const useHabits = create<HabitsState>()(
         set({ habits: created, seeded: true });
       },
     }),
-    { name: "loop-habits-v1" },
+    {
+      name: "loop-habits-v1",
+      // Backfill any notification fields added after a user first persisted
+      // (e.g. weeklyReport / reportTime) so older saves don't break.
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<HabitsState>;
+        return {
+          ...current,
+          ...p,
+          notifications: { ...defaultNotifications, ...(p.notifications ?? {}) },
+        };
+      },
+    },
   ),
 );
 
