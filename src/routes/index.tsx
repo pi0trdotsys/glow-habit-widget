@@ -77,18 +77,24 @@ function TodayPage() {
         </div>
       )}
 
-      <Link
-        to="/habits/new"
-        className="fixed bottom-24 right-1/2 z-30 grid h-14 w-14 translate-x-[208px] place-items-center rounded-full shadow-2xl"
-        style={{
-          backgroundColor: "var(--primary)",
-          color: "var(--primary-foreground)",
-          boxShadow: "0 10px 30px -10px color-mix(in oklab, var(--primary) 60%, transparent)",
-        }}
-        aria-label="Add habit"
+      {/* Anchored within the centered app column so it never clips off-screen. */}
+      <div
+        className="pointer-events-none fixed inset-x-0 bottom-0 z-30 mx-auto flex max-w-md justify-end px-5"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 5.5rem)" }}
       >
-        <Plus size={26} strokeWidth={2.4} />
-      </Link>
+        <Link
+          to="/habits/new"
+          className="pointer-events-auto grid h-14 w-14 place-items-center rounded-full shadow-2xl transition-transform active:scale-95"
+          style={{
+            backgroundColor: "var(--primary)",
+            color: "var(--primary-foreground)",
+            boxShadow: "0 10px 30px -10px color-mix(in oklab, var(--primary) 60%, transparent)",
+          }}
+          aria-label="Add habit"
+        >
+          <Plus size={26} strokeWidth={2.4} />
+        </Link>
+      </div>
     </AppShell>
   );
 }

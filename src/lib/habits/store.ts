@@ -12,6 +12,8 @@ export interface NotificationSettings {
   /** Day of week for the weekly recap. 0 = Sunday ... 6 = Saturday. */
   reportDay: number;
   reportTime: string; // "HH:mm"
+  /** Motivational midday boosts directly comparing this week vs last week. */
+  boosts: boolean;
 }
 
 const defaultNotifications: NotificationSettings = {
@@ -20,6 +22,7 @@ const defaultNotifications: NotificationSettings = {
   weeklyReport: false,
   reportDay: 0, // Sunday
   reportTime: "19:00",
+  boosts: false,
 };
 
 interface HabitsState {

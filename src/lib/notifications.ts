@@ -19,7 +19,15 @@ export type PermissionState = "granted" | "denied" | "default" | "unsupported";
 // live above HABIT_ID_BASE so they never collide with the fixed ones.
 const ID_DAILY = 1001;
 const ID_WEEKLY = 2001;
+const ID_BOOST_1 = 3001;
+const ID_BOOST_2 = 3002;
 const HABIT_ID_BASE = 100000;
+
+// Times of day for the motivational boosts (local).
+const BOOST_TIMES = [
+  { hour: 12, minute: 30 },
+  { hour: 17, minute: 30 },
+];
 
 const isNative = () => Capacitor.isNativePlatform();
 
@@ -56,6 +64,38 @@ function weeklyReportBody(): string {
       ? "you're matching last week - can you pull ahead?"
       : "last week was stronger - let's beat it this week!";
   return `${who}${trend} Tap to compare this week vs last week.`;
+}
+
+/**
+ * Motivational midday boost that directly compares this week to last week.
+ * `slot` picks a different angle so the two daily boosts don't read the same.
+ */
+function boostBody(slot: number): string {
+  const { habits, completions, userName } = useHabits.getState();
+  const who = userName ? `${userName}, ` : "";
+  if (habits.length === 0) {
+    return `${who}add a habit and start building your streak today. 🌱`;
+  }
+  const r = weeklyReport(habits, completions);
+  const d = r.delta;
+  const upDown =
+    d > 0 ? `up ${d} pts 🚀` : d < 0 ? `down ${Math.abs(d)} pts` : "dead even";
+
+  if (slot === 0) {
+    // Rate-focused
+    return `${who}this week ${r.thisWeek.rate}% vs last week ${r.lastWeek.rate}% - you're ${upDown}. ${
+      d >= 0 ? "Keep it rolling! 🔥" : "A few taps turns it around 💪"
+    }`;
+  }
+  // Count-focused
+  const diff = r.thisWeek.done - r.lastWeek.done;
+  const countLine =
+    diff > 0
+      ? `${diff} more than last week 🎉`
+      : diff < 0
+      ? `${Math.abs(diff)} behind last week - catch up! 💪`
+      : "matching last week exactly";
+  return `${who}${r.thisWeek.done} habits done this week, ${countLine}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -141,6 +181,19 @@ async function syncNative(): Promise<void> {
     });
   }
 
+  if (notifications.boosts) {
+    const boostIds = [ID_BOOST_1, ID_BOOST_2];
+    BOOST_TIMES.forEach((t, i) => {
+      schedule.push({
+        id: boostIds[i],
+        title: "Loop",
+        body: boostBody(i),
+        schedule: { on: { hour: t.hour, minute: t.minute } },
+        extra: { route: "/report" },
+      });
+    });
+  }
+
   if (schedule.length) {
     await LocalNotifications.schedule({ notifications: schedule });
   }
@@ -189,6 +242,13 @@ function webTick(): void {
     now.getDay() === notifications.reportDay
   ) {
     fire("weekly", "Loop weekly recap", weeklyReportBody());
+  }
+  if (notifications.boosts) {
+    BOOST_TIMES.forEach((t, i) => {
+      if (`${pad(t.hour)}:${pad(t.minute)}` === hhmm) {
+        fire(`boost-${i}`, "Loop", boostBody(i));
+      }
+    });
   }
 }
 

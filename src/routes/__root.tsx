@@ -7,7 +7,8 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { AnimatePresence } from "framer-motion";
 
 import { Capacitor } from "@capacitor/core";
 import appCss from "../styles.css?url";
@@ -15,6 +16,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { startWidgetBridge } from "../lib/widget/bridge";
 import { syncNotifications } from "../lib/notifications";
 import { useHabits } from "../lib/habits/store";
+import { SplashScreen } from "@/components/SplashScreen";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -130,6 +132,7 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+  const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
     // Mirror habit data to the native Android home-screen widget. No-op on web.
@@ -171,7 +174,14 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <PwaRegister />
       <Outlet />
-      <Toaster position="top-center" />
+      <Toaster
+        position="bottom-center"
+        offset={{ bottom: "calc(env(safe-area-inset-bottom) + 6.5rem)" }}
+        mobileOffset={{ bottom: "calc(env(safe-area-inset-bottom) + 6.5rem)" }}
+      />
+      <AnimatePresence>
+        {showSplash && <SplashScreen onDone={() => setShowSplash(false)} />}
+      </AnimatePresence>
     </QueryClientProvider>
   );
 }

@@ -10,7 +10,10 @@ const config: CapacitorConfig = {
   },
   plugins: {
     SplashScreen: {
-      launchShowDuration: 1400,
+      // The animated in-app splash (src/components/SplashScreen.tsx) hides this
+      // native splash as soon as the web layer is ready. launchShowDuration is
+      // just a safety fallback in case the JS layer never boots.
+      launchShowDuration: 3000,
       launchAutoHide: true,
       backgroundColor: "#0b0d11",
       androidScaleType: "CENTER_CROP",

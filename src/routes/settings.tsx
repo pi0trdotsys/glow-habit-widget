@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Download, Upload, RotateCcw, Smartphone, Bell, User, CalendarCheck } from "lucide-react";
+import { Download, Upload, RotateCcw, Smartphone, Bell, User, CalendarCheck, Flame } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useHabits } from "@/lib/habits/store";
 import {
@@ -203,6 +203,31 @@ function SettingsPage() {
           </div>
           <p className="mt-2 text-[11px] text-muted-foreground">
             A weekly nudge to compare this week's habits against last week.
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-card p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Flame size={18} className="text-primary" />
+              <span className="font-medium">Motivational boosts</span>
+            </div>
+            <Toggle
+              checked={notif.boosts}
+              disabled={permission === "unsupported"}
+              onChange={async (on) => {
+                if (on) {
+                  if (await ensurePermission()) {
+                    setNotifications({ ...notif, boosts: true });
+                  }
+                } else {
+                  setNotifications({ ...notif, boosts: false });
+                }
+              }}
+            />
+          </div>
+          <p className="mt-2 text-[11px] text-muted-foreground">
+            Midday and evening nudges that directly compare this week vs last week.
           </p>
         </div>
 
